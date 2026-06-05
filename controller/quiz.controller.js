@@ -55,7 +55,6 @@ async(req,res)=>{
                 "id",
                 "title",
                 "subject",
-                "totalQuestions",
                 "rewardTokens"
             ]
 
