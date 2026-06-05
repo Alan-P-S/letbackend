@@ -6,7 +6,7 @@ import axios from 'axios';
 
 
 import router from "./routes/app.route.js";
-
+import videoRouter from "./routes/video.route.js"
 dotenv.config();
 
 const app = express();
@@ -64,6 +64,12 @@ app.use(
     "/api",
     router
 );
+
+app.use(
+    "/api/videos",
+    videoRouter
+);
+
 
 
 // 404 Handler
