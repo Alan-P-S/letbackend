@@ -17,7 +17,7 @@ export default (sequelize) => {
 
         email:{
             type:DataTypes.STRING,
-            unique:true
+            unique: 'unique_student_email'
         },
 
         password:{
@@ -34,11 +34,11 @@ export default (sequelize) => {
             type:DataTypes.INTEGER,
             defaultValue:0
         },
-
         attemptedCount:{
             type:DataTypes.INTEGER,
             defaultValue:0
-        }
+        },
+        
 
     });
 

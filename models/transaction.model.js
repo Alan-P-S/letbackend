@@ -11,7 +11,7 @@ export default (sequelize)=>{
                 primaryKey:true,
                 autoIncrement:true
             },
-
+            
             amount:{
                 type:DataTypes.INTEGER,
                 allowNull:false
