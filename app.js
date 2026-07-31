@@ -10,6 +10,7 @@ import router from "./routes/app.route.js";
 import videoRouter from "./routes/video.route.js"
 import subscriptionRoute from "./routes/subscription.route.js"
 import { checkWebsite } from "./controller/webmonitor.controller.js";
+import { scheduler } from "./lib/scheduler.js";
 
 
 dotenv.config();
@@ -30,6 +31,7 @@ cron.schedule('*/1 * * * *', async () => {
     const response = await axios.get('https://letbackend.onrender.com/');
     checkWebsite();
     console.log(`Ping successful! Status: ${response.status}`);
+    scheduler();
   } catch (error) {
     console.error('Ping failed:', error.message);
   }

@@ -25,6 +25,10 @@ export default (sequelize)=>{
       type: DataTypes.STRING,
       allowNull: true,
     },
+    isActive:{
+      type:DataTypes.BOOLEAN,
+      default:0
+    }
   },
   {
     tableName: "fcm_tokens",

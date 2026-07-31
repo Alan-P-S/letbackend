@@ -1,4 +1,4 @@
-import { saveFcmToken, sendCustomNotification, subscribe,sendNotification } from "../controller/subscription.controller.js";
+import { saveFcmToken, sendCustomNotification, subscribe,sendNotification, fetchActiveusers,getAllNotifications, getTime, getElapsedDays, scheduleNotification } from "../controller/subscription.controller.js";
 import express from 'express'
 const router = express.Router();
 
@@ -9,6 +9,10 @@ router.get("/",(req,res)=>{
     res.send("notificationServiceRoute");
     console.log("notificationServiceRoute");
 })
+
+router.get("/time",getTime);
+router.get("/day",getElapsedDays);
+router.get("/fetch-active-users",fetchActiveusers);
 router.post("/register-device", saveFcmToken);
 /**
  * @openapi
@@ -39,4 +43,6 @@ router.post("/register-device", saveFcmToken);
  *         description: Failes to send Messages.
  */
 router.post("/send-notification",sendNotification);
+router.get("/notifications",getAllNotifications);
+router.post("/schedule-notification",scheduleNotification)
 export default router;
