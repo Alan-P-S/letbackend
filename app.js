@@ -11,6 +11,10 @@ import videoRouter from "./routes/video.route.js"
 import subscriptionRoute from "./routes/subscription.route.js"
 import { checkWebsite } from "./controller/webmonitor.controller.js";
 import { scheduler } from "./lib/scheduler.js";
+import { sendNotificationToAll } from "./lib/pushService.js";
+import { sendNativeNotificationToAll } from "./lib/NativeNotification.js";
+import accademicRouter from './routes/accademic.route.js';
+import { isPeriod } from "./lib/timetable.js";
 
 
 dotenv.config();
@@ -37,6 +41,15 @@ cron.schedule('*/1 * * * *', async () => {
   }
 });
 
+cron.schedule('*/1 * * * *',async()=>{
+    try{
+        console.log("Quoate Sended",)
+        isPeriod();
+    }
+    catch(error){
+        console.error("Error",error)
+    }
+})
 app.use(
     express.json({
         limit:"10mb"
@@ -52,6 +65,7 @@ app.use(
 
 // Health Check
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 app.get("/",(req,res)=>{
 
     res.json({
@@ -72,6 +86,7 @@ app.use(
     "/api",
     router
 );
+app.use('/api/accademic',accademicRouter);
 
 app.use(
     "/api/videos",

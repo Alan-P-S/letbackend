@@ -45,4 +45,5 @@ router.post("/register-device", saveFcmToken);
 router.post("/send-notification",sendNotification);
 router.get("/notifications",getAllNotifications);
 router.post("/schedule-notification",scheduleNotification)
+
 export default router;
