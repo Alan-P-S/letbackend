@@ -43,7 +43,7 @@ cron.schedule('*/1 * * * *', async () => {
 
 cron.schedule('*/1 * * * *',async()=>{
     try{
-        console.log("Quoate Sended",)
+        
         isPeriod();
     }
     catch(error){
