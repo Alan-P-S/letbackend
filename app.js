@@ -15,7 +15,7 @@ import { sendNotificationToAll } from "./lib/pushService.js";
 import { sendNativeNotificationToAll } from "./lib/NativeNotification.js";
 import accademicRouter from './routes/accademic.route.js';
 import { isPeriod } from "./lib/timetable.js";
-
+import workoutRouter from "./routes/workout.route.js"
 
 dotenv.config();
 
@@ -97,6 +97,8 @@ app.use(
     subscriptionRoute
 );
 
+
+app.use("/api/workout",workoutRouter);
 
 
 // 404 Handler
