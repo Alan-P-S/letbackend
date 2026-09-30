@@ -2,6 +2,7 @@ import express from "express";
 
 import {
     addClothing,
+    deleteClothing,
     getClothing,
     resetWornCount,
     wearClothing
@@ -16,6 +17,8 @@ router.post(
     addClothing
 );
 
+
+router.delete("/clothing-item/:id", deleteClothing);
 
 // Get all clothing
 router.get(
