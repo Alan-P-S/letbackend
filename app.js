@@ -16,7 +16,7 @@ import { sendNativeNotificationToAll } from "./lib/NativeNotification.js";
 import accademicRouter from './routes/accademic.route.js';
 import { isPeriod } from "./lib/timetable.js";
 import workoutRouter from "./routes/workout.route.js"
-
+import warddobeRoute from "./routes/wardobe.route.js"
 dotenv.config();
 
 const app = express();
@@ -96,7 +96,7 @@ app.use(
     "/api/subscribe",
     subscriptionRoute
 );
-
+app.use("/api/wardobe",warddobeRoute);
 
 app.use("/api/workout",workoutRouter);
 
