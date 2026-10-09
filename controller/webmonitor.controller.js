@@ -8,8 +8,8 @@ const {
     WebsiteMonitor
 } = models;
 
-const TARGET_URL = "https://lbsapplications.kerala.gov.in/btechlet2026";
-const TARGET_SELECTOR = "body > div.container.body > div > div.right_col";
+const TARGET_URL = "https://ssc.gov.in/home/notice-board";
+const TARGET_SELECTOR = "body";
 
 function createHash(text) {
   return crypto.createHash("sha256").update(text).digest("hex");
@@ -32,6 +32,7 @@ export const checkWebsite = async () => {
 
     const targetElement = $(TARGET_SELECTOR);
 
+    
     if (!targetElement.length) {
       console.log("Selector not found");
       return;

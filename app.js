@@ -41,15 +41,15 @@ cron.schedule('*/1 * * * *', async () => {
   }
 });
 
-cron.schedule('*/1 * * * *',async()=>{
-    try{
+// cron.schedule('*/1 * * * *',async()=>{
+//     try{
         
-        isPeriod();
-    }
-    catch(error){
-        console.error("Error",error)
-    }
-})
+//         isPeriod();
+//     }
+//     catch(error){
+//         console.error("Error",error)
+//     }
+// })
 app.use(
     express.json({
         limit:"10mb"
