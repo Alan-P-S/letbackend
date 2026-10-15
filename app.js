@@ -16,6 +16,7 @@ import { sendNativeNotificationToAll } from "./lib/NativeNotification.js";
 import accademicRouter from './routes/accademic.route.js';
 import { isPeriod } from "./lib/timetable.js";
 import workoutRouter from "./routes/workout.route.js"
+import electionRoutes from "./routes/election.route.js";
 import warddobeRoute from "./routes/wardobe.route.js"
 dotenv.config();
 
@@ -100,7 +101,7 @@ app.use("/api/wardobe",warddobeRoute);
 
 app.use("/api/workout",workoutRouter);
 
-
+app.use("/api/election",electionRoutes);
 // 404 Handler
 
 app.use((req,res)=>{
