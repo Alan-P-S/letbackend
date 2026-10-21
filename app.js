@@ -18,6 +18,11 @@ import { isPeriod } from "./lib/timetable.js";
 import workoutRouter from "./routes/workout.route.js"
 import electionRoutes from "./routes/election.route.js";
 import warddobeRoute from "./routes/wardobe.route.js"
+import hangmanRoutes from "./routes/hangman.route.js"
+import { models } from "./lib/db.js";
+import { startHangmanDeadlineWatcher } from "./lib/hangmanDeadlinewatcher.js";
+const { 
+ HangmanTask, HangmanGameSlot } = models;
 dotenv.config();
 
 const app = express();
@@ -73,6 +78,8 @@ app.get("/",(req,res)=>{
 });
 
 
+
+startHangmanDeadlineWatcher();
 // Routes
 
 app.use(
@@ -80,6 +87,7 @@ app.use(
     router
 );
 app.use('/api/accademic',accademicRouter);
+app.use("/api/hangman", hangmanRoutes);
 
 app.use(
     "/api/videos",
