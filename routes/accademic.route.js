@@ -6,7 +6,7 @@ import { getTimeTable, updatetimetable,addStudySession,
     getPriorities,
     createPriority,
     deletePriority,
-    readBook
+    Reminder
 } from "../controller/accademic.controller.js";
 
 
@@ -16,7 +16,7 @@ router.get('/study-section',getStudySessions);
 router.post('/study-section',addStudySession);
 router.get('/time-table',getTimeTable);
 router.post('/time-table',updatetimetable);
-router.post('/read-book',readBook);
+router.post('/reminder',Reminder);
 
 router.post(
     "/priorities",
