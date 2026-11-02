@@ -2,11 +2,13 @@
 import { Op } from "sequelize";
 import { models } from "../lib/db.js";
 import { sequelize } from "../lib/db.js";
+import { createHmac } from "node:crypto";
 const { 
   Party,
   Position,
   Candidate,
-  Vote } = models;
+  Vote,
+VotedIP} = models;
 
 // GET /api/election/ballot
 // Public ballot: no vote counts returned
@@ -114,11 +116,11 @@ export const addCandidate = async (req, res) => {
   }
 };
 
-// POST /api/election/votes
-// Body: { selections: [{ positionId, candidateId }, ...] }
+
 export const submitVote = async (req, res) => {
   const { selections } = req.body ?? {};
 
+  // Validate ballot
   if (!Array.isArray(selections) || selections.length === 0) {
     return res.status(400).json({
       message: "Selections must be a non-empty array"
@@ -139,27 +141,67 @@ export const submitVote = async (req, res) => {
     });
   }
 
-  if (new Set(normalized.map(s => s.positionId)).size !== normalized.length) {
+  if (
+    new Set(normalized.map(s => s.positionId)).size !== normalized.length
+  ) {
     return res.status(400).json({
       message: "Only one candidate per position is allowed"
     });
   }
 
+  // Require configured IP hashing
+  const ipHashSecret = process.env.IP_HASH_SECRET;
+
+  if (!ipHashSecret) {
+    console.error("IP_HASH_SECRET is not configured");
+
+    return res.status(500).json({
+      message: "IP restriction is not configured"
+    });
+  }
+
+  if (!VotedIP) {
+    console.error("VotedIP model is not registered");
+
+    return res.status(500).json({
+      message: "IP restriction is not configured"
+    });
+  }
+
+  // Express req.ip depends on your proxy configuration.
+  const clientIP = req.ip;
+
+  if (!clientIP) {
+    return res.status(400).json({
+      message: "Unable to identify client IP"
+    });
+  }
+
+  // Hash IP instead of storing the raw address.
+  const ipHash = createHmac("sha256", ipHashSecret)
+    .update(clientIP)
+    .digest("hex");
+
   const transaction = await sequelize.transaction();
 
   try {
+    // Validate all positions exist.
     const positions = await Position.findAll({ transaction });
 
     if (
       positions.length !== normalized.length ||
-      positions.some(p => !normalized.some(s => s.positionId === p.id))
+      positions.some(p =>
+        !normalized.some(s => s.positionId === p.id)
+      )
     ) {
       await transaction.rollback();
+
       return res.status(400).json({
         message: "Select exactly one candidate for every position"
       });
     }
 
+    // Validate candidates.
     const candidates = await Candidate.findAll({
       where: {
         id: { [Op.in]: normalized.map(s => s.candidateId) },
@@ -170,39 +212,67 @@ export const submitVote = async (req, res) => {
 
     if (candidates.length !== normalized.length) {
       await transaction.rollback();
+
       return res.status(400).json({
         message: "One or more candidates are invalid or inactive"
       });
     }
 
     for (const selection of normalized) {
-      const candidate = candidates.find(c => c.id === selection.candidateId);
+      const candidate = candidates.find(
+        c => c.id === selection.candidateId
+      );
 
-      if (candidate.PositionId !== selection.positionId) {
+      if (!candidate || candidate.PositionId !== selection.positionId) {
         await transaction.rollback();
+
         return res.status(400).json({
           message: "Candidate does not belong to the selected position"
         });
       }
     }
 
+    // Register this IP. VotedIP.ipHash MUST have a UNIQUE constraint.
+    // Concurrent duplicate submissions are rejected by the database.
+    await VotedIP.create(
+      { ipHash },
+      { transaction }
+    );
+
+    // Save all votes in the same transaction.
     const votes = normalized.map(selection => ({
       CandidateId: selection.candidateId,
       PositionId: selection.positionId
     }));
 
     await Vote.bulkCreate(votes, { transaction });
+
     await transaction.commit();
 
-    res.status(201).json({
+    return res.status(201).json({
       message: "Vote submitted successfully"
     });
+
   } catch (error) {
-    if (!transaction.finished) await transaction.rollback();
-    console.error(error);
-    res.status(500).json({ message: "Failed to submit vote" });
+    if (!transaction.finished) {
+      await transaction.rollback();
+    }
+
+    // Same IP has already registered a ballot.
+    if (error instanceof UniqueConstraintError) {
+      return res.status(409).json({
+        message: "A ballot has already been submitted from this IP address."
+      });
+    }
+
+    console.error("Vote submission failed:", error);
+
+    return res.status(500).json({
+      message: "Failed to submit vote"
+    });
   }
 };
+
 
 // GET /api/election/admin/results
 // Protect this endpoint with admin authentication.

@@ -1,6 +1,8 @@
 
 import { Router } from "express";
 
+import { generalLimiter,voteLimiter,
+  adminWriteLimiter } from "../lib/rateLimiter.js";
 import {
   getBallot,
   addParty,
@@ -16,12 +18,12 @@ const router = Router();
 
 // Public endpoints
 router.get("/ballot", getBallot);
-router.post("/votes", submitVote);
+router.post("/votes", voteLimiter, submitVote);
 
 // Admin endpoints
 router.post("/parties", adminOnly, addParty);
 router.post("/positions", adminOnly, addPosition);
-router.post("/candidates", adminOnly, addCandidate);
+router.post("/candidates", adminOnly, addCandidate);  
 router.get("/admin/results", adminOnly, getResults);
 
 export default router;
