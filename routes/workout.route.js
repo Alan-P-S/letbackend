@@ -8,5 +8,5 @@ const router = express.Router();
 router.get("/squathold",getSquatHolds);
 router.post("/squathold",addSquatHold);
 
-
+   
 export default router;
