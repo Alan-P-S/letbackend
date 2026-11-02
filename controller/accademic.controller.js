@@ -622,13 +622,14 @@ export const deletePriority = async (req, res) => {
 
 };
 
-export const readBook = async(req,res)=>{
-     
+export const Reminder = async(req,res)=>{
+    const {title,body} = req.body;
     try{
-        await sendNativeNotificationToAll("Read Atomic Book","Build Tiny Habits and Change Your Life");
+        await sendNativeNotificationToAll(title,body);
         res.status(200).json({message:"Notificaion send"});
     }catch(err){
         res.status(500).json({message:"Internal server Error"});
     }
 
 }
+
